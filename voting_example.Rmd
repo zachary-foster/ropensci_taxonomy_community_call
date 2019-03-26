@@ -103,6 +103,7 @@ obj <- mutate_obs(obj, "totals", total = bernie + hillary)
 ## Get top counties
 
 I will get a list of the "taxon" IDs for the county in each state with the most votes.
+These will the only counties labeled in the plot below.
 
 ```{r}
 top_counties <- unlist(subtaxa_apply(obj, subset = taxon_ranks == "state", value = "total",
@@ -128,3 +129,5 @@ obj %>%
             repel_labels = FALSE,
             output_file = "voting.png")
 ```
+
+Places colored green cast more votes for Hillary Clinton and places colored brown cast more votes for Bernie Sanders.

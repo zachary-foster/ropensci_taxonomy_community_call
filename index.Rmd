@@ -114,6 +114,9 @@ obj %>%
 
 #### Voting organized by geography
 
+Any hierarchical data can be used with `metacoder` and `taxa`.
+Here is an example of plotting voting results from the 2016 US Democratic primary between Bernie Sanders and Hillary Clinton, using geography as the hierarchy instead of taxonomy.
+
 [Link to analysis code](voting_example.html)
 
 ![](voting.png)
@@ -121,9 +124,14 @@ obj %>%
 
 #### Differential taxon abundance in the human microbiome
 
+The `metacoder` package focuses on ecological analysis of taxonomic data, especially microbiome data.
+Here is an example that uses `metacoder` to visualize differences in the human microbiome among body sites.
+
 [Link to analysis code](https://grunwaldlab.github.io/metacoder_documentation/example.html)
 
 ![](microbiome_example.png)
+
+The grey tree on the lower left functions as a key for the unlabeled trees. Each of the smaller trees represent a comparison between body sites in the columns and rows. A taxon colored brown is more abundant in the body site in the column and a taxon colored green is more abundant in body site of the row. For example, Bacteroidetes is more abundant (i.e. has more reads) in the throat samples than the nose samples and this is due to the greater abundance of two genera Prevotella and Porphyromonas.
 
 
 #### Links for more information
