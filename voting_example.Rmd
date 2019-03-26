@@ -1,0 +1,130 @@
+---
+output:
+  html_document: default
+---
+
+```{r echo=FALSE}
+options(crayon.enabled = TRUE, tibble.max_extra_cols = 10)
+
+library(knitr)
+opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, autodep = TRUE,
+               dev = 'png', fig.width = 10, fig.height = 10,
+               cache.lazy = FALSE, fig.align = "center")
+knit_hooks$set(
+  hide_button = function(before, options, envir) {
+    if (is.character(options$hide_button)) {
+      button_text = options$hide_button
+    } else {
+      button_text = "Show solution"
+    }
+    block_label <- paste0("hide_button", options$label)
+    if (before) {
+      return(paste0(sep = "\n",
+                    '<button class="btn btn-danger" data-toggle="collapse" data-target="#', block_label, '"> ', button_text, ' </button>\n',
+                    '<div id="', block_label, '" class="collapse">\n'))
+    } else {
+      return("</div><br />\n")
+    }
+  },
+  output = function(x, options){
+    x <- gsub(x, pattern = "<", replacement = "&lt;")
+    x <- gsub(x, pattern = ">", replacement = "&gt;")
+    paste0(
+      "<pre class=\"r-output\"><code>",
+      fansi::sgr_to_html(x = x, warn = TRUE, term.cap = "256"),
+      # ansistrings::ansi_to_html(text = x, fullpage = FALSE),
+      "</code></pre>"
+    )
+  }
+)
+options(width = 100)
+```
+
+# Voting geography example
+
+
+## Install packages
+
+```{r eval=FALSE}
+# install.packages("metacoder")
+# install.packages("readr")
+```
+
+## Load packages
+
+```{r}
+library(readr)
+library(metacoder)
+library(dplyr)
+```
+
+
+## Introduction
+
+Although `metacoder` and `taxa` have been designed for use with taxonomic data, any data that can be assigned to a hierarchy can be used. 
+To demonstrate this, we have used metacoder to display the results of the 2016 Democratic primary election. 
+
+## Read in data
+
+We will use the `readr` package to read in the data.
+You can download the data [here](primary_results.csv).
+
+```{r}
+raw_data <- read_csv("primary_results.csv")
+raw_data
+```
+
+## Create and parse classifications
+
+Instead of have taxonomic ranks in columns, this data has regions in columns, but its the same idea.
+
+```{r}
+obj <- parse_tax_data(raw_data,
+                      class_cols = c("country", "region", "division", "state", "county"),
+                      named_by_rank = TRUE)
+obj
+```
+
+## Get canidate vote counts
+
+We have now need to sum the data for geographic region.
+
+```{r}
+obj$data$totals <- obj %>%
+  filter_obs("tax_data", candidate == "Bernie Sanders") %>%
+  calc_taxon_abund("tax_data", cols = "votes", out_names = "bernie")
+obj$data$totals <- obj %>%
+  filter_obs("tax_data", candidate == "Hillary Clinton") %>%
+  calc_taxon_abund("tax_data", cols = "votes", out_names = "hillary") %>%
+  left_join(obj$data$totals)
+obj <- mutate_obs(obj, "totals", total = bernie + hillary)
+```
+
+## Get top counties
+
+I will get a list of the "taxon" IDs for the county in each state with the most votes.
+
+```{r}
+top_counties <- unlist(subtaxa_apply(obj, subset = taxon_ranks == "state", value = "total",
+                                     function(x) names(x[which.max(x)])))
+```
+
+## Plotting results
+
+```{r}
+obj %>%
+  heat_tree(node_size = total,
+            node_size_range = c(0.0002, 0.06),
+            node_color = (hillary - bernie) / total * 100,
+            edge_label = ifelse(taxon_ids %in% top_counties | n_supertaxa <= 3, taxon_names, ""),
+            edge_label_size_trans = "area",
+            edge_label_size_range = c(0.008, 0.025),
+            node_color_range = c("#a6611a", "lightgray", "#018571"),
+            node_color_interval = c(-50, 50),
+            edge_color_range = c("#a6611a", "lightgray", "#018571"),
+            edge_color_interval = c(-50, 50),
+            node_color_axis_label = "Clinton               Sanders",
+            node_size_axis_label = "Total votes",
+            repel_labels = FALSE,
+            output_file = "voting.png")
+```
