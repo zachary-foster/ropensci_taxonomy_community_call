@@ -79,7 +79,7 @@ occ$data
 Note how the taxonomy is encoded in a set of columns:
 
 ```{r}
-colnames(occ$data)[26:31]
+occ$data[26:31]
 ```
 
 We can use these columns to infer a taxonomy and organize the data according to it.
@@ -95,9 +95,13 @@ Note how the original table is now part of the object and a unique taxon ID has 
 
 ### Plotting and filtering taxonomic data
 
-Using the `taxmap` format keeps the taxonomic and non-taxonomic in sync, allowing for filtering data based on taxon characteristics and vice versa.
+Using the `taxmap` format keeps the taxonomic and non-taxonomic parts of the data in sync, allowing for filtering data based on taxon characteristics and vice versa.
 It also allows you to use the `heat_tree` function from the `metacoder` package to plot per-taxon data.
-In the example below, we plot the number of occurrence for each taxon after filtering out species, any taxa not a subtaxa of Tracheophyta (vascular plants), and any order that does not have at least 10 subtaxa.
+In the example below, we plot the number of occurrence for each taxon after filtering out:
+
+* any taxno at the rank of species
+* any taxa not a subtaxa of Tracheophyta (vascular plants)
+* any order that does not have at least 10 subtaxa
 
 ```{r}
 obj %>% 
