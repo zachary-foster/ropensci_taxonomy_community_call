@@ -99,7 +99,7 @@ Using the `taxmap` format keeps the taxonomic and non-taxonomic parts of the dat
 It also allows you to use the `heat_tree` function from the `metacoder` package to plot per-taxon data.
 In the example below, we plot the number of occurrence for each taxon after filtering out:
 
-* any taxno at the rank of species
+* any taxon at the rank of species
 * any taxa not a subtaxa of Tracheophyta (vascular plants)
 * any order that does not have at least 10 subtaxa
 
