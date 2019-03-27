@@ -51,6 +51,7 @@ Each of these packages do much more than this; see the links at the end of this 
 
 ```{r eval=FALSE}
 install.packages("metacoder")
+install.packages("taxa")
 install.packages("rgbif")
 ```
 
@@ -59,6 +60,7 @@ install.packages("rgbif")
 
 ```{r message=FALSE}
 library(rgbif)
+library(taxa)
 library(metacoder)
 ```
 
